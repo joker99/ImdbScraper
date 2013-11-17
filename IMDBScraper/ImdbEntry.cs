@@ -42,7 +42,7 @@ namespace IMDBScraper
             var yearNode = document.DocumentNode.SelectSingleNode("//h1[@class='header']").Elements("span").FirstOrDefault(e =>e.Element("a") != null);
             if(yearNode != null)
                 Year = int.Parse(yearNode.Element("a").InnerText);
-            var ratingNode = document.DocumentNode.SelectSingleNode("//span[@itemprop='ratingValue']");
+            var ratingNode = document.DocumentNode.SelectSingleNode("//span[@itemprop='ratingValue']"); 
             if (ratingNode != null && ratingNode.InnerText.Trim() != "-")
             {
                 Rating = double.Parse(ratingNode.InnerText.Trim());
