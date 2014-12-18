@@ -25,7 +25,7 @@ namespace IMDBScraper
             btnScrape.Enabled = false;
             var imdbIds = txtIO.Text.Split(new string[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).ToList();
             // the input can be a link to coming soon page (http://www.imdb.com/movies-coming-soon/) or list of imdb id's
-            if (imdbIds.Count == 1 && imdbIds[0].IndexOf("imdb.com") != 0)
+            if (imdbIds.Count == 1 && imdbIds[0].IndexOf("imdb.com") >= 0)
             {
                 imdbIds = ParseComingSoonPage(imdbIds[0]).ToList();
             }
