@@ -36,7 +36,7 @@ namespace IMDBScraper
                     {
                         document.Load(sr);
                     }
-                    Name = System.Net.WebUtility.HtmlDecode(document.DocumentNode.SelectSingleNode("//span[@itemprop='name']").InnerText.Trim());
+                    Name = System.Net.WebUtility.HtmlDecode(document.DocumentNode.SelectSingleNode("//h4[@itemprop='name']").InnerText.Trim());
                     var yearNode = document.DocumentNode.SelectSingleNode("//h1[@class='header']").Elements("span").FirstOrDefault(e => e.Element("a") != null);
                     if (yearNode != null)
                         Year = int.Parse(yearNode.Element("a").InnerText);
