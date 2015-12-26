@@ -5,6 +5,8 @@ using System.Text;
 using System.Net;
 using HtmlAgilityPack;
 using System.IO;
+using System.Windows.Forms;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace IMDBScraper
 {
@@ -36,10 +38,22 @@ namespace IMDBScraper
                     {
                         document.Load(sr);
                     }
-                    Name = System.Net.WebUtility.HtmlDecode(document.DocumentNode.SelectSingleNode("//h4[@itemprop='name']").InnerText.Trim());
-                    var yearNode = document.DocumentNode.SelectSingleNode("//h1[@class='header']").Elements("span").FirstOrDefault(e => e.Element("a") != null);
+                    var nameNode = document.DocumentNode.SelectSingleNode("//h1[@itemprop='name']");
+                    if (nameNode != null)
+                    {
+                        Name = nameNode.FirstChild.InnerText.Trim('\n', ' ');
+                    }
+                    else
+                    {
+                        nameNode = document.DocumentNode.SelectSingleNode("//h1[@class='header']");
+                        Name = System.Net.WebUtility.HtmlDecode(nameNode.SelectSingleNode("span").InnerText.Trim());
+                    }
+                    var yearNode = document.DocumentNode.SelectSingleNode("//h1[@class='header']");
+                    if (yearNode == null)
+                        yearNode = document.DocumentNode.SelectSingleNode("//h1[@itemprop='name']");
                     if (yearNode != null)
-                        Year = int.Parse(yearNode.Element("a").InnerText);
+                        yearNode = yearNode.Elements("span").FirstOrDefault(e => e.Element("a") != null);
+                    Year = int.Parse(yearNode.Element("a").InnerText);
                     var ratingNode = document.DocumentNode.SelectSingleNode("//span[@itemprop='ratingValue']");
                     if (ratingNode != null && ratingNode.InnerText.Trim() != "-")
                     {
@@ -47,13 +61,17 @@ namespace IMDBScraper
                         var ratingCount = document.DocumentNode.SelectSingleNode("//span[@itemprop='ratingCount']");
                         if (ratingCount != null)
                             RatingCount = int.Parse(ratingCount.InnerText.Trim(), System.Globalization.NumberStyles.AllowThousands);
-                        Genres = document.DocumentNode.SelectSingleNode("//div[@class='infobar']").Elements("a").Select(n => System.Net.WebUtility.HtmlDecode(n.InnerText).Trim());
+                        var genresNode = document.DocumentNode.SelectSingleNode("//div[@class='infobar']");
+                        if (genresNode != null)
+                            Genres = genresNode.Elements("a").Select(n => System.Net.WebUtility.HtmlDecode(n.InnerText).Trim());
+                        else
+                            Genres = document.DocumentNode.SelectNodes("//span[@itemprop='genre']").Select(n => System.Net.WebUtility.HtmlDecode(n.InnerText).Trim());
                     }
                     break;
                 }
                 catch (Exception ex)
                 { 
-
+                    MessageBox.Show(ex.ToString());
                 }
             }
         }
